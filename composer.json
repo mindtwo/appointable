@@ -1,0 +1,88 @@
+{
+    "name": "mindtwo/appointable",
+    "description": "This package helps you to manage appointments within yout Laravel application.",
+    "keywords": [
+        "mindtwo",
+        "laravel",
+        "appointable",
+        "appointments"
+    ],
+    "homepage": "https://github.com/mindtwo/appointable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "mindtwo GmbH",
+            "email": "info@mindtwo.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "illuminate/contracts": "^11.0",
+        "mindtwo/laravel-auto-create-uuid": "^2.6"
+    },
+    "require-dev": {
+        "larastan/larastan": "^2.0",
+        "pestphp/pest": "^2.34",
+        "laravel/pint": "^1.2",
+        "orchestra/testbench": "^9.0",
+        "phpstan/phpstan-phpunit": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "mindtwo\\Appointable\\": "src",
+            "mindtwo\\Appointable\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "mindtwo\\Appointable\\Tests\\": "tests",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare",
+            "@php ./vendor/bin/testbench package:discover --ansi"
+        ],
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint",
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "lint": [
+            "@php vendor/bin/pint --ansi",
+            "@php vendor/bin/phpstan analyse --verbose --ansi"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "mindtwo\\PxEmployeeManagement\\Providers\\PxEmployeeManagementServiceProvider"
+            ],
+            "aliases": {
+                "PxEmployeeManagement": "mindtwo\\PxEmployeeManagement\\Facades\\PxEmployeeManagement",
+                "EmployeeManagementApi": "mindtwo\\PxEmployeeManagement\\Facades\\EmployeeManagementApi",
+                "ImportManagementApi": "mindtwo\\PxEmployeeManagement\\Facades\\ImportManagementApi"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
