@@ -24,7 +24,8 @@
     20 => 'Illuminate\\Translation\\TranslationServiceProvider',
     21 => 'Illuminate\\Validation\\ValidationServiceProvider',
     22 => 'Illuminate\\View\\ViewServiceProvider',
-    23 => 'mindtwo\\Appointable\\Providers\\AppointableServiceProvider',
+    23 => 'Spatie\\LaravelRay\\RayServiceProvider',
+    24 => 'mindtwo\\Appointable\\Providers\\AppointableServiceProvider',
   ),
   'eager' => 
   array (
@@ -38,7 +39,8 @@
     7 => 'Illuminate\\Pagination\\PaginationServiceProvider',
     8 => 'Illuminate\\Session\\SessionServiceProvider',
     9 => 'Illuminate\\View\\ViewServiceProvider',
-    10 => 'mindtwo\\Appointable\\Providers\\AppointableServiceProvider',
+    10 => 'Spatie\\LaravelRay\\RayServiceProvider',
+    11 => 'mindtwo\\Appointable\\Providers\\AppointableServiceProvider',
   ),
   'deferred' => 
   array (
