@@ -28,11 +28,4 @@ class TestCase extends Orchestra
             AppointableServiceProvider::class,
         ];
     }
-
-    public function getEnvironmentSetUp($app)
-    {
-        $migration = include __DIR__.'/../database/migrations/create_appointments_table.php.stub';
-        $migration->up();
-
-    }
 }
