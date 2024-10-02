@@ -24,11 +24,21 @@ class AppointmentUpdated
         public array $original,
     ) {}
 
+    /**
+     * Get the keys of the changed attributes.
+     *
+     * @return array<string>
+     */
     public function getDiffKeys(): array
     {
         return array_keys($this->getDiff());
     }
 
+    /**
+     * Get the changed attributes.
+     *
+     * @return array<string, mixed>
+     */
     public function getDiff(): array
     {
         $changes = collect($this->changes)->map(function ($value, $key) {
