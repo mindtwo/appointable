@@ -219,7 +219,6 @@ class Appointment extends Model implements AppointableContract
      */
     public function toAppointmentData(): array
     {
-        // TODO get data from linkable?
         return collect([
             'uid' => $this->uid,
             'title' => $this->title,

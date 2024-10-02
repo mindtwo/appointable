@@ -68,7 +68,7 @@ trait BaseAppointable
      */
     public function getAppointmentTitle(): ?string
     {
-        if (property_exists($this, 'title')) {
+        if (property_exists($this, 'title') || property_exists($this, 'attributes') && array_key_exists('title', $this->attributes)) {
             return $this->title;
         }
 
@@ -84,7 +84,7 @@ trait BaseAppointable
      */
     public function getAppointmentDescription(): ?string
     {
-        if (property_exists($this, 'description')) {
+        if (property_exists($this, 'description') || property_exists($this, 'attributes') && array_key_exists('description', $this->attributes)) {
             return $this->description;
         }
 
@@ -100,7 +100,7 @@ trait BaseAppointable
      */
     public function getLocation(): string
     {
-        if (property_exists($this, 'location')) {
+        if (property_exists($this, 'location') || property_exists($this, 'attributes') && array_key_exists('location', $this->attributes)) {
             return $this->location;
         }
 

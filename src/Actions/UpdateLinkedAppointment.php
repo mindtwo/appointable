@@ -34,7 +34,7 @@ class UpdateLinkedAppointment
         $result = tap($appointment)->update($diff);
 
         // dispatch event
-        AppointmentUpdated::dispatch($appointment, $diff, $oldAppointmentData);
+        AppointmentUpdated::dispatch($appointment, $appointableData, $oldAppointmentData);
 
         return $result;
     }

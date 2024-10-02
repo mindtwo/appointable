@@ -71,23 +71,38 @@ it('should dispatch AppointmentUpdated event with changes and original attribute
         AppointmentUpdated::class,
     ]);
 
+    $start = now();
+    $end = $start->copy()->addHour();
+
     $appointment = app(CreateAppointment::class)([
         'title' => 'Test Appointment',
-        'start_date' => now(),
-        'end_date' => now()->addHour(),
+        'start_date' => $start->format('Y-m-d'),
+        'end_date' => $end->format('Y-m-d'),
+        'start_time' => $start->format('H:i:s'),
+        'end_time' => $end->format('H:i:s'),
     ], 1);
 
     $orignalTitle = $appointment->title;
 
+    $newStart = $start->copy()->addHour();
+    $newEnd = $end->copy()->addHour();
     app(UpdateAppointment::class)($appointment, [
         'title' => 'New Title',
-        'is_entire_day' => true,
+        'start_time' => $newStart->format('H:i:s'),
+        'end_time' => $newEnd->format('H:i:s'),
     ]);
 
-    Event::assertDispatched(AppointmentUpdated::class, function ($event) use ($appointment, $orignalTitle) {
+    Event::assertDispatched(AppointmentUpdated::class, function ($event) use ($appointment, $orignalTitle, $newStart, $newEnd, $start, $end) {
         return $event->appointment->is($appointment)
             && $event->changes['title'] === 'New Title'
-            && $event->original['title'] === $orignalTitle;
+            && $event->original['title'] === $orignalTitle
+&& $event->changes['start_time'] === $newStart->format('H:i:s')
+&& $event->original['start_time'] === $start->format('H:i:s')
+            && $event->changes['end_time'] === $newEnd->format('H:i:s')
+            && $event->original['end_time'] === $end->format('H:i:s')
+            && in_array('title', $event->getDiffKeys())
+            && in_array('start_time', $event->getDiffKeys())
+            && in_array('end_time', $event->getDiffKeys());
     });
 });
 
@@ -96,24 +111,31 @@ it('should dispatch AppointmentUpdated for linked event', function () {
         AppointmentUpdated::class,
     ]);
 
+    $start = now();
+
     $calendarAppointment = CalendarAppointment::factory()->create([
         'user_id' => 1,
+        'start' => $start,
     ]);
 
     $appointment = $calendarAppointment->appointment;
 
     $orignalTitle = $appointment->title;
 
+    $newStart = $start->copy()->addHour();
     $calendarAppointment->update([
         'title' => 'New Title',
+        'start' => $newStart,
     ]);
 
-    Event::assertDispatched(AppointmentUpdated::class, function ($event) use ($appointment, $orignalTitle) {
-        // TODO check if changes are correct
-
+    Event::assertDispatched(AppointmentUpdated::class, function ($event) use ($appointment, $orignalTitle, $newStart, $start) {
         return $event->appointment->is($appointment)
             && $event->changes['title'] === 'New Title'
-            && $event->original['title'] === $orignalTitle;
+            && $event->original['title'] === $orignalTitle
+            && $event->changes['start_time'] === $newStart->format('H:i:s')
+            && $event->original['start_time'] === $start->format('H:i:s')
+            && in_array('title', $event->getDiffKeys())
+            && in_array('start_date', $event->getDiffKeys());
     });
 });
 

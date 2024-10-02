@@ -27,8 +27,7 @@ class UpdateAppointment
 
         $oldAppointmentData = $appointmentData;
 
-        // get the difference between the old and new data of the appointment
-        $diff = array_diff_assoc([
+        $updateData = [
             'title' => $data['title'] ?? $appointment->title,
             'location' => $data['location'] ?? null,
             'description' => $data['description'] ?? null,
@@ -38,13 +37,16 @@ class UpdateAppointment
             'end_date' => $endDate,
             'start_time' => $data['start_time'],
             'end_time' => $data['end_time'],
-        ], $appointmentData);
+        ];
+
+        // get the difference between the old and new data of the appointment
+        $diff = array_diff_assoc($updateData, $appointmentData);
 
         // update the appointment
         $result = tap($appointment)->update($diff);
 
         // dispatch event
-        AppointmentUpdated::dispatch($appointment, $diff, $oldAppointmentData);
+        AppointmentUpdated::dispatch($appointment, $updateData, $oldAppointmentData);
 
         return $result;
     }
