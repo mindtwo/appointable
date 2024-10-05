@@ -18,6 +18,7 @@ test('can delete an appointment by the uuid', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
     ]);
 
     $this->delete(route('appointments.cancel', $appointment->uuid))
@@ -35,6 +36,7 @@ test('can delete an appointment by the uid', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
     ]);
 
     $this->delete(route('appointments.cancel', '1-9'))
@@ -52,6 +54,7 @@ test('can`t cancel appointment for other users', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => 999,
+        'invitee_type' => User::class,
     ]);
 
     $this->delete(route('appointments.cancel', '1-9'))

@@ -16,6 +16,7 @@ test('can confirm an appointment by the uuid', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
     ]);
 
     $response = $this->post(route('appointments.confirm', $appointment->uuid))
@@ -36,6 +37,7 @@ test('can confirm an appointment by the uid', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
     ]);
 
     $response = $this->post(route('appointments.confirm', '1-9'))
@@ -57,6 +59,7 @@ test('can`t confirm appointment for other users', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => 999,
+        'invitee_type' => User::class,
     ]);
 
     $this->post(route('appointments.confirm', '1-9'), [
@@ -99,6 +102,7 @@ test('can`t confirm finalized appointments', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
         'status' => AppointmentStatus::Final,
     ]);
 

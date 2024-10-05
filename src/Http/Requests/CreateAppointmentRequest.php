@@ -78,5 +78,18 @@ class CreateAppointmentRequest extends FormRequest
                 'end_date' => $this->input('start_date'),
             ]);
         }
+
+        // set the format of the start time and end time to H:i:s
+        if ($this->has('start_time') && $startTime = $this->input('start_time')) {
+            $this->merge([
+                'start_time' => \Carbon\Carbon::parse($startTime)->format('H:i:s'),
+            ]);
+        }
+
+        if ($this->has('end_time') && $endTime = $this->input('end_time')) {
+            $this->merge([
+                'end_time' => \Carbon\Carbon::parse($endTime)->format('H:i:s'),
+            ]);
+        }
     }
 }

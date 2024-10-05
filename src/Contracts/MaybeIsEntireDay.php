@@ -1,5 +1,7 @@
 <?php
 
+namespace mindtwo\Appointable\Contracts;
+
 interface MaybeIsEntireDay
 {
     /**

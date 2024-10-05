@@ -19,6 +19,6 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        config()->set('appointable.models.user', \Workbench\App\Models\User::class);
     }
 }

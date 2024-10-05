@@ -4,6 +4,7 @@ namespace mindtwo\Appointable\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use mindtwo\Appointable\Contracts\AppointableResource;
 
 /**
  * Class AppointmentResource
@@ -31,6 +32,13 @@ class AppointmentResource extends JsonResource
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'status' => $this->status,
+            'linkable' => $this->whenLoaded('linkable', function () {
+                if ($this->linkable instanceof AppointableResource) {
+                    return $this->linkable->toAppointableResource();
+                }
+
+                return $this->linkable->toArray();
+            }),
         ];
     }
 }

@@ -15,13 +15,23 @@ class CreateAppointmentController
     {
         $data = $request->validated();
 
-        $inviteeId = $data['invitee'] ?? $request->user()?->id;
+        $invitee = $data['invitee'] ?? $request->user();
 
-        if (! $inviteeId) {
+        if (is_int($invitee)) {
+            $defaultInviteeClass = config('appointable.models.user');
+
+            if (! is_a($defaultInviteeClass, \Illuminate\Database\Eloquent\Model::class, true)) {
+                return response()->json(['error' => 'Invalid default invitee class'], 500);
+            }
+
+            $invitee = $defaultInviteeClass::find($invitee);
+        }
+
+        if (! $invitee) {
             return response()->json(['error' => 'Invitee not specified'], 422);
         }
 
-        $appointment = app(CreateAppointment::class)($data, $inviteeId, $request->boolean('is_entire_day', false));
+        $appointment = app(CreateAppointment::class)($data, $invitee, $request->boolean('is_entire_day', false));
 
         $appointmentResourceClass = config('appointable.resources.appointment', \mindtwo\Appointable\Http\Resources\AppointmentResource::class);
 

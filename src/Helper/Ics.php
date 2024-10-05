@@ -4,9 +4,9 @@ namespace mindtwo\Appointable\Helper;
 
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Support\Str;
-use MaybeIsEntireDay;
 use mindtwo\Appointable\Contracts\BaseAppointable as AppointableContract;
 use mindtwo\Appointable\Contracts\LocatableAppointment;
+use mindtwo\Appointable\Contracts\MaybeIsEntireDay;
 use Stringable;
 
 class Ics implements Stringable

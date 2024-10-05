@@ -19,7 +19,7 @@ return new class extends Migration
 
             $table->string('uid')->unique();
 
-            $invitee = $table->unsignedBigInteger('invitee_id');
+            $table->morphs('invitee', 'invitee_index');
 
             $table->nullableMorphs('linkable');
 
@@ -27,6 +27,8 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
+
+            $table->string('timezone')->nullable();
 
             $table->boolean('is_entire_day')->default(false);
 
@@ -40,8 +42,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->index([$invitee->name]);
-            $table->index([$invitee->name, $startDate->name]);
+            $table->index(['invitee_type', 'invitee_id', $startDate->name]);
         });
     }
 

@@ -2,6 +2,7 @@
 
 namespace mindtwo\Appointable\Contracts;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 interface BaseAppointable
@@ -20,7 +21,7 @@ interface BaseAppointable
     /**
      * Get the id of the invitee.
      */
-    public function getInviteeId(): ?int;
+    public function getInvitee(): ?Model;
 
     /**
      * Get the title of the appointment.

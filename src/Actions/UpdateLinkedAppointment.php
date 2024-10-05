@@ -4,6 +4,7 @@ namespace mindtwo\Appointable\Actions;
 
 use mindtwo\Appointable\Contracts\BaseAppointable as AppointableContract;
 use mindtwo\Appointable\Contracts\LocatableAppointment;
+use mindtwo\Appointable\Contracts\MaybeIsEntireDay;
 use mindtwo\Appointable\Events\AppointmentUpdated;
 use mindtwo\Appointable\Models\Appointment;
 
@@ -68,6 +69,10 @@ class UpdateLinkedAppointment
             'start_time' => $startTime,
             'end_time' => $endTime,
         ];
+
+        if ($appointable instanceof MaybeIsEntireDay) {
+            $data['is_entire_day'] = $appointable->isEntireDay();
+        }
 
         if ($appointable instanceof LocatableAppointment && $appointable->hasLocation()) {
             $data['location'] = $appointable->getLocation();

@@ -18,6 +18,7 @@ test('can update an appointment by the uuid', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
     ]);
 
     $newStart = now()->addDays(3);
@@ -62,6 +63,7 @@ test('can update an appointment by the uid', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
     ]);
 
     $newStart = now()->addDays(3);
@@ -109,6 +111,7 @@ test('can change from specified times to entire day', function () {
         'start_time' => '08:00:00',
         'end_time' => '17:00:00',
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
     ]);
 
     $newStart = now()->addDays(3);
@@ -153,6 +156,7 @@ test('can`t update appointment for other users', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => 999,
+        'invitee_type' => User::class,
     ]);
 
     $this->put(route('appointments.update', '1-9'), [

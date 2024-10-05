@@ -12,6 +12,7 @@ use mindtwo\Appointable\Events\AppointmentCreated;
 use mindtwo\Appointable\Events\AppointmentDeclined;
 use mindtwo\Appointable\Events\AppointmentUpdated;
 use Workbench\App\Models\CalendarAppointment;
+use Workbench\App\Models\User;
 
 it('should dispatch AppointmentCreated event', function () {
     Event::fake([
@@ -22,7 +23,7 @@ it('should dispatch AppointmentCreated event', function () {
         'title' => 'Test Appointment',
         'start_date' => now(),
         'end_date' => now()->addHour(),
-    ], 1);
+    ], User::factory()->create());
 
     Event::assertDispatched(AppointmentCreated::class, function ($event) use ($appointment) {
         return $event->appointment->is($appointment);
@@ -50,7 +51,7 @@ it('should dispatch AppointmentUpdated event', function () {
         'title' => 'Test Appointment',
         'start_date' => now(),
         'end_date' => now()->addHour(),
-    ], 1);
+    ], User::factory()->create());
 
     Event::fake([
         AppointmentUpdated::class,
@@ -80,7 +81,7 @@ it('should dispatch AppointmentUpdated event with changes and original attribute
         'end_date' => $end->format('Y-m-d'),
         'start_time' => $start->format('H:i:s'),
         'end_time' => $end->format('H:i:s'),
-    ], 1);
+    ], User::factory()->create());
 
     $orignalTitle = $appointment->title;
 
@@ -148,7 +149,7 @@ it('should dispatch AppointmentCanceled event', function () {
         'title' => 'Test Appointment',
         'start_date' => now(),
         'end_date' => now()->addHour(),
-    ], 1);
+    ], User::factory()->create());
 
     app(CancelAppointment::class)($appointment);
 
@@ -184,7 +185,7 @@ it('should dispatch AppointmentConfirmed event', function () {
         'title' => 'Test Appointment',
         'start_date' => now(),
         'end_date' => now()->addHour(),
-    ], 1);
+    ], User::factory()->create());
 
     app(ConfirmAppointmentInvitation::class)($appointment);
 
@@ -202,7 +203,7 @@ it('should dispatch AppointmentDeclined event', function () {
         'title' => 'Test Appointment',
         'start_date' => now(),
         'end_date' => now()->addHour(),
-    ], 1);
+    ], User::factory()->create());
 
     app(DeclineAppointmentInvitation::class)($appointment);
 

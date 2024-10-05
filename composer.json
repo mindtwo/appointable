@@ -74,13 +74,9 @@
     "extra": {
         "laravel": {
             "providers": [
-                "mindtwo\\PxEmployeeManagement\\Providers\\PxEmployeeManagementServiceProvider"
+                "mindtwo\\Appointable\\Providers\\AppointableServiceProvider"
             ],
-            "aliases": {
-                "PxEmployeeManagement": "mindtwo\\PxEmployeeManagement\\Facades\\PxEmployeeManagement",
-                "EmployeeManagementApi": "mindtwo\\PxEmployeeManagement\\Facades\\EmployeeManagementApi",
-                "ImportManagementApi": "mindtwo\\PxEmployeeManagement\\Facades\\ImportManagementApi"
-            }
+            "aliases": []
         }
     },
     "minimum-stability": "dev",

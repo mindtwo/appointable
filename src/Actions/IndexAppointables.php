@@ -6,6 +6,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use mindtwo\Appointable\Enums\CalendarInterval;
+use mindtwo\Appointable\Http\Resources\AppointmentResource;
 use mindtwo\Appointable\Models\Appointment;
 
 class IndexAppointables
@@ -69,11 +70,12 @@ class IndexAppointables
                 }
             }
 
-            $carry[$dateKey][] = $appointment;
+            $carry[$dateKey][] = AppointmentResource::make($appointment);
 
             return $carry;
         }, []);
 
+        // TODO resource?
         return [
             'data' => [
                 'current_date' => $date,
@@ -83,14 +85,18 @@ class IndexAppointables
                 'current_week' => $currentWeekNumber,
                 'current_month' => $currentMonth,
                 'current_year' => $currentYear,
+                'current_month_name' => trans('calendar.months.'.$currentMonth),
                 // appointments
                 'days' => $days,
+                // appointment data
                 'appointments' => $groupedAppointments,
                 // TODO
                 // month names
                 'month_names' => [],
                 // week days
                 'week_days' => [],
+                // short week days
+                'short_days' => trans('calendar.short_days'),
             ],
             'meta' => array_merge($meta, [
                 'start' => $dateInterval['start'],

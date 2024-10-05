@@ -2,10 +2,8 @@
 
 namespace mindtwo\Appointable\Models;
 
-use Exception;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Support\Carbon;
@@ -43,6 +41,8 @@ use mindtwo\LaravelAutoCreateUuid\AutoCreateUuid;
  * @property ?string $location
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ *
+ * TODO: timezone handling
  */
 class Appointment extends Model implements AppointableContract
 {
@@ -109,15 +109,9 @@ class Appointment extends Model implements AppointableContract
      *
      * @phpstan-ignore-next-line
      */
-    public function invitee(): BelongsTo
+    public function invitee(): MorphTo
     {
-        $inviteeClass = config('appointable.models.invitee');
-
-        if (! class_exists($inviteeClass)) {
-            throw new Exception('Invitee model not found');
-        }
-
-        return $this->belongsTo($inviteeClass, 'invitee_id');
+        return $this->morphTo();
     }
 
     /**
@@ -256,9 +250,9 @@ class Appointment extends Model implements AppointableContract
     /**
      * Get the id of the invitee.
      */
-    public function getInviteeId(): ?int
+    public function getInvitee(): ?Model
     {
-        return $this->invitee_id;
+        return $this->invitee;
     }
 
     /**

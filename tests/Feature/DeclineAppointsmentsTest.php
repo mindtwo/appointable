@@ -19,6 +19,7 @@ test('can decline an appointment by the uuid', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
     ]);
 
     $response = $this->post(route('appointments.decline', $appointment->uuid))
@@ -40,6 +41,7 @@ test('can decline an appointment by the uid', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
     ]);
 
     $response = $this->post(route('appointments.decline', '1-9'))
@@ -61,6 +63,7 @@ test('can`t decline appointment for other users', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => 999,
+        'invitee_type' => User::class,
     ]);
 
     $this->post(route('appointments.decline', '1-9'))
@@ -93,6 +96,7 @@ test('can`t decline finalized appointments', function () {
         'start_date' => now()->addDay(),
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
+        'invitee_type' => User::class,
         'status' => AppointmentStatus::Final,
     ]);
 

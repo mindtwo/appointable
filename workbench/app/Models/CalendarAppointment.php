@@ -42,9 +42,9 @@ class CalendarAppointment extends Model implements AppointableContract
         return $this->belongsTo(User::class);
     }
 
-    public function getInviteeId(): ?int
+    public function getInvitee(): ?Model
     {
-        return $this->user_id;
+        return $this->user;
     }
 
     /**

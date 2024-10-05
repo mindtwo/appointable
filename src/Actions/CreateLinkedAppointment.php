@@ -5,13 +5,19 @@ namespace mindtwo\Appointable\Actions;
 use Illuminate\Database\Eloquent\Model;
 use mindtwo\Appointable\Contracts\BaseAppointable as AppointableContract;
 use mindtwo\Appointable\Contracts\LocatableAppointment;
+use mindtwo\Appointable\Contracts\MaybeIsEntireDay;
 use mindtwo\Appointable\Events\AppointmentCreated;
 use mindtwo\Appointable\Models\Appointment;
 
 class CreateLinkedAppointment
 {
-    public function __invoke(AppointableContract $appointable): Appointment
+    public function __invoke(AppointableContract $appointable): ?Appointment
     {
+        $invitee = $appointable->getInvitee();
+        if (! $invitee) {
+            return null;
+        }
+
         // Create the data array
         $data = $this->getAppointableArray($appointable);
 
@@ -49,17 +55,24 @@ class CreateLinkedAppointment
         $startTime = $startDate->format('H:i:s');
         $endTime = $endDate->format('H:i:s');
 
+        $invitee = $appointable->getInvitee();
+
         // Create the data array
         $data = [
             'uid' => $appointable->getAppointmentUid(),
             'title' => $appointable->getAppointmentTitle(),
             'description' => $appointable->getAppointmentDescription(),
-            'invitee_id' => $appointable->getInviteeId(),
+            'invitee_id' => $invitee->getKey(),
+            'invitee_type' => $invitee->getMorphClass(),
             'start_date' => $startDate,
             'end_date' => $endDate,
             'start_time' => $startTime,
             'end_time' => $endTime,
         ];
+
+        if ($appointable instanceof MaybeIsEntireDay) {
+            $data['is_entire_day'] = $appointable->isEntireDay();
+        }
 
         if ($appointable instanceof LocatableAppointment && $appointable->hasLocation()) {
             $data['location'] = $appointable->getLocation();
