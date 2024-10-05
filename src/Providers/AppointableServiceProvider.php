@@ -26,6 +26,10 @@ class AppointableServiceProvider extends ServiceProvider
     protected function registerConfig(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/appointable.php', 'appointable');
+
+        $this->publishes([
+            __DIR__.'/../../config/appointable.php' => config_path('appointable.php'),
+        ], 'appointable-config');
     }
 
     /**
@@ -35,10 +39,6 @@ class AppointableServiceProvider extends ServiceProvider
      */
     protected function publishMigration()
     {
-        if (class_exists('CreateSyncedImportsTable')) {
-            return;
-        }
-
         $this->publishes([
             __DIR__.'/../../database/migrations/create_appointments_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_appointments_table.php'),
         ], 'appointable-migrations');
