@@ -140,6 +140,10 @@ class IndexAppointables
     {
         $days = [];
 
+        // get the start and end of the week
+        $start = $start->startOfWeek();
+        $end = $end->endOfWeek();
+
         do {
             /** @var Carbon $day */
             $day = ! isset($day) ? (clone $start) : $day->addDay();
@@ -149,7 +153,6 @@ class IndexAppointables
                 'day' => $day->format('d'),
                 'day_of_week' => $day->dayOfWeek,
                 'is_current_day' => $day->isToday(),
-                // 'is_current_month' => $day->isSameMonth($current_date),
             ];
         } while (! $end->isSameDay($day));
 
