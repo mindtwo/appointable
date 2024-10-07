@@ -13,6 +13,8 @@ class IndexAppointables
 {
     private Carbon $current_date;
 
+    private CalendarInterval $calendarInterval;
+
     /**
      * Handle the action.
      *
@@ -23,6 +25,7 @@ class IndexAppointables
         abort_if(! Auth::check(), 401);
 
         $this->current_date = $date;
+        $this->calendarInterval = $calendarInterval;
 
         $currentDay = $date->day;
         $currentWeekNumber = $date->week;
@@ -140,9 +143,12 @@ class IndexAppointables
     {
         $days = [];
 
-        // get the start and end of the week
-        $start = $start->startOfWeek();
-        $end = $end->endOfWeek();
+        // if we have a monthly calendar we need to start at the beginning of the week
+        if ($this->calendarInterval === CalendarInterval::Monthly) {
+            // get the start and end of the week
+            $start = $start->startOfWeek();
+            $end = $end->endOfWeek();
+        }
 
         do {
             /** @var Carbon $day */

@@ -35,8 +35,10 @@ it('should dispatch AppointmentCreated event for linked model', function () {
         AppointmentCreated::class,
     ]);
 
+    $user = User::factory()->create();
+
     $calendarAppointment = CalendarAppointment::factory()->create([
-        'user_id' => 1,
+        'user_id' => $user->id,
     ]);
 
     $appointment = $calendarAppointment->appointment;
@@ -113,9 +115,9 @@ it('should dispatch AppointmentUpdated for linked event', function () {
     ]);
 
     $start = now();
-
+    $user = User::factory()->create();
     $calendarAppointment = CalendarAppointment::factory()->create([
-        'user_id' => 1,
+        'user_id' => $user->id,
         'start' => $start,
     ]);
 
@@ -162,9 +164,9 @@ it('should dispatch AppointmentCanceled event for deleted linked', function () {
     Event::fake([
         AppointmentCanceled::class,
     ]);
-
+    $user = User::factory()->create();
     $calendarAppointment = CalendarAppointment::factory()->create([
-        'user_id' => 1,
+        'user_id' => $user->id,
     ]);
 
     $appointment = $calendarAppointment->appointment;

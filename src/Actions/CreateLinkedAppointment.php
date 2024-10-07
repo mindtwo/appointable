@@ -14,6 +14,7 @@ class CreateLinkedAppointment
     public function __invoke(AppointableContract $appointable): ?Appointment
     {
         $invitee = $appointable->getInvitee();
+
         if (! $invitee) {
             return null;
         }
