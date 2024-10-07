@@ -5,12 +5,17 @@ namespace mindtwo\Appointable\Concerns;
 use mindtwo\Appointable\Actions\CancelAppointment;
 use mindtwo\Appointable\Actions\CreateLinkedAppointment;
 use mindtwo\Appointable\Actions\UpdateLinkedAppointment;
+use mindtwo\Appointable\Contracts\MaybeAutoCreated;
 
 trait BaseAppointable
 {
     public static function bootBaseAppointable(): void
     {
         static::created(function ($model) {
+            if ($model instanceof MaybeAutoCreated && ! $model->autoCreateAppointment()) {
+                return;
+            }
+
             $action = app(CreateLinkedAppointment::class);
 
             $action($model);
@@ -25,7 +30,10 @@ trait BaseAppointable
         static::deleting(function ($model) {
             $action = app(CancelAppointment::class);
 
-            $action($model->appointment);
+            $model->loadMissing('appointment');
+            if ($model->appointment) {
+                $action($model->appointment);
+            }
         });
     }
 
