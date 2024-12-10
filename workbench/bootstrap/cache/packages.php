@@ -1,4 +1,11 @@
 <?php return array (
+  'laravel/pail' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laravel\\Pail\\PailServiceProvider',
+    ),
+  ),
   'laravel/tinker' => 
   array (
     'providers' => 
@@ -39,13 +46,6 @@
     'providers' => 
     array (
       0 => 'Orchestra\\Canvas\\Core\\LaravelServiceProvider',
-    ),
-  ),
-  'spatie/laravel-ray' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Spatie\\LaravelRay\\RayServiceProvider',
     ),
   ),
   'mindtwo/appointable' => 
