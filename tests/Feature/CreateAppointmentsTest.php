@@ -16,36 +16,36 @@ test('create an appointment', function (array $data, int $expect_status) {
     $response->assertStatus($expect_status);
 })->with([
     [
-        'data' => [
+        [
             'title' => 'Test Appointment',
             'start' => now()->addDay()->format('Y-m-d H:i:s'),
             'end' => now()->addDay()->addHour()->format('Y-m-d H:i:s'),
         ],
-        'expect_status' => 201,
+        201,
     ],
     [
-        'data' => [
+        [
             'title' => 'Test Appointment',
             'start_date' => now()->addDay()->format('Y-m-d H:i:s'),
         ],
-        'expect_status' => 201,
+        201,
     ],
     [
-        'data' => [
+        [
             'title' => 'Test Appointment',
             'start_date' => now()->addDay()->format('Y-m-d H:i:s'),
             'end_date' => now()->addDay()->addHour()->format('Y-m-d H:i:s'),
         ],
-        'expect_status' => 201,
+        201,
     ],
     [
-        'data' => [
+        [
             'title' => 'Test Appointment',
         ],
-        'expect_status' => 422,
+        422,
     ],
     [
-        'data' => [
+        [
             'title' => 'Test Appointment',
             'start_date' => now()->addDay()->format('Y-m-d H:i:s'),
             'end_date' => now()->subDay()->format('Y-m-d H:i:s'),
@@ -54,7 +54,7 @@ test('create an appointment', function (array $data, int $expect_status) {
             'location' => 'Test Location',
             'description' => 'Test Description',
         ],
-        'expect_status' => 422,
+        422,
     ],
 ]);
 

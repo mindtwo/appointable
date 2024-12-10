@@ -102,7 +102,7 @@ it('lists all appointments if we switch date parameter', function ($createDates,
     });
 })->with([
     [
-        'createDates' => function ($user) {
+        function ($user) {
             $currentMonth = now()->month;
             $currentYear = now()->year;
 
@@ -124,12 +124,12 @@ it('lists all appointments if we switch date parameter', function ($createDates,
                 ->date($currentYear, $currentMonth + 1, 15)
                 ->create();
         },
-        'created' => 10,
-        'expectForDate' => 3,
-        'date' => now()->month(now()->month - 1),
+        10,
+        3,
+        now()->month(now()->month - 1),
     ],
     [
-        'createDates' => function ($user) {
+        function ($user) {
             $currentMonth = now()->month;
             $currentYear = now()->year;
 
@@ -151,9 +151,9 @@ it('lists all appointments if we switch date parameter', function ($createDates,
                 ->date($currentYear, $currentMonth + 1)
                 ->create();
         },
-        'created' => 10,
-        'expectForDate' => 3,
-        'date' => now()->month(now()->month + 1),
+        10,
+        3,
+        now()->month(now()->month + 1),
     ],
 ]);
 
