@@ -19,7 +19,8 @@
     "require": {
         "php": "^8.3",
         "illuminate/contracts": "^11.0",
-        "mindtwo/laravel-auto-create-uuid": "^2.6"
+        "mindtwo/laravel-auto-create-uuid": "^2.6",
+        "spatie/laravel-data": "^4.0"
     },
     "require-dev": {
         "larastan/larastan": "^2.0",
