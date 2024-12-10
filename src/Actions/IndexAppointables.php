@@ -5,8 +5,9 @@ namespace mindtwo\Appointable\Actions;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use mindtwo\Appointable\Data\AppointmentData;
+use mindtwo\Appointable\Data\CalendarMeta;
 use mindtwo\Appointable\Enums\CalendarInterval;
-use mindtwo\Appointable\Http\Resources\AppointmentResource;
 use mindtwo\Appointable\Models\Appointment;
 
 class IndexAppointables
@@ -35,50 +36,43 @@ class IndexAppointables
         // get meta information
         $meta = $this->getMetaInformation($calendarInterval);
 
-        // get the interval based on the calendar interval
-        $dateInterval = $this->getDateInterval($calendarInterval);
-
         // get the calendar grid
-        $days = $this->getCalendarGrid($dateInterval['start'], $dateInterval['end']);
+        $days = $this->getCalendarGrid($meta->start, $meta->end);
 
-        $appointments = $this->getAppointments($dateInterval['start'], $dateInterval['end']);
+        // Get appointments
+        $appointments = $this->getAppointments($meta->start, $meta->end);
 
-        $groupedAppointments = $appointments->reduce(function ($carry, $appointment) use ($appointments) {
+        $groupedAppointments = $appointments->reduce(function ($carry, Appointment $appointment) use ($appointments) {
             $dateKey = $appointment->start_date->format('Y-m-d');
 
             $start = Carbon::parse($appointment->start_date->format('Y-m-d').' '.$appointment->start_time)->floorMinutes(5);
             $start_of_day = Carbon::parse($appointment->start_date);
             $end = Carbon::parse($appointment->start_date->format('Y-m-d').' '.$appointment->end_time)->ceilMinutes(5);
 
-            // TODO: remove ignore
-            // @phpstan-ignore-next-line
-            $appointment->gridrow = ($start->diffInMinutes($start_of_day) / 5) + 2;
+            $appointmentData = AppointmentData::fromAppointment($appointment);
 
-            // TODO: remove ignore
-            // @phpstan-ignore-next-line
-            $appointment->span = ($end->diffInMinutes($start) / 5);
-            if ($appointment->span < 6) {
-                $appointment->span = 6;
+            // calculate grid row and span
+            $appointmentData->gridrow = ($start->diffInMinutes($start_of_day) / 5) + 2;
+            $appointmentData->span = ($end->diffInMinutes($start) / 5);
+            if ($appointmentData->span < 6) {
+                $appointmentData->span = 6;
             }
 
-            // TODO: remove ignore
-            // @phpstan-ignore-next-line
-            $appointment->same = -1;
+            $appointmentData->same = -1;
 
             foreach ($appointments as $inner_appointment) {
                 $start_inner = Carbon::parse($inner_appointment->start_date->format('Y-m-d').' '.$inner_appointment->start_time)->floorMinutes(5);
                 $end_inner = Carbon::parse($inner_appointment->start_date->format('Y-m-d').' '.$inner_appointment->end_time)->ceilMinutes(5);
                 if ($start->isBetween($start_inner, $end_inner) || $end->isBetween($start_inner, $end_inner)) {
-                    $appointment->same += 1;
+                    $appointmentData->same += 1;
                 }
             }
 
-            $carry[$dateKey][] = AppointmentResource::make($appointment);
+            $carry[$dateKey][] = $appointmentData->toArray();
 
             return $carry;
         }, []);
 
-        // TODO resource?
         return [
             'data' => [
                 'current_date' => $date,
@@ -89,11 +83,10 @@ class IndexAppointables
                 'current_month' => $currentMonth,
                 'current_year' => $currentYear,
                 'current_month_name' => trans('calendar.months.'.$currentMonth),
-                // appointments
+                // Days of the month
                 'days' => $days,
                 // appointment data
                 'appointments' => $groupedAppointments,
-                // TODO
                 // month names
                 'month_names' => [],
                 // week days
@@ -101,10 +94,7 @@ class IndexAppointables
                 // short week days
                 'short_days' => trans('calendar.short_days'),
             ],
-            'meta' => array_merge($meta, [
-                'start' => $dateInterval['start'],
-                'end' => $dateInterval['end'],
-            ]),
+            'meta' => $meta->toArray(),
         ];
     }
 
@@ -194,40 +184,11 @@ class IndexAppointables
 
     /**
      * Get meta information.
-     *
-     * @return array{previous: Carbon, current: Carbon, next: Carbon}
      */
-    protected function getMetaInformation(CalendarInterval $calendarInterval): array
+    protected function getMetaInformation(CalendarInterval $calendarInterval): CalendarMeta
     {
         $currentDate = $this->current_date->copy();
 
-        $previous = match (
-            $calendarInterval
-        ) {
-            CalendarInterval::Daily => $currentDate->copy()->subDay(),
-            CalendarInterval::Weekly => $currentDate->copy()->subWeek(),
-            CalendarInterval::Monthly => $currentDate->copy()->subMonth(),
-        };
-
-        $next = match (
-            $calendarInterval
-        ) {
-            CalendarInterval::Daily => $currentDate->copy()->addDay(),
-            CalendarInterval::Weekly => $currentDate->copy()->addWeek(),
-            CalendarInterval::Monthly => $currentDate->copy()->addMonth(),
-        };
-
-        return [
-            'previous' => $previous,
-            'current' => $currentDate,
-            'next' => $next,
-        ];
+        return CalendarMeta::fromDateInterval($calendarInterval, $currentDate);
     }
-
-    // public function toArray(): array
-    // {
-    //     return [
-    //         'grouped_appointments' => $this->grouped_appointments,
-    //     ];
-    // }
 }

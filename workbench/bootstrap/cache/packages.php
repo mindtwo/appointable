@@ -48,6 +48,20 @@
       0 => 'Orchestra\\Canvas\\Core\\LaravelServiceProvider',
     ),
   ),
+  'spatie/laravel-data' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Spatie\\LaravelData\\LaravelDataServiceProvider',
+    ),
+  ),
+  'spatie/php-structure-discoverer' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
+    ),
+  ),
   'mindtwo/appointable' => 
   array (
     'providers' => 
