@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use mindtwo\Appointable\Casts\TimeCast;
 use mindtwo\Appointable\Contracts\BaseAppointable as AppointableContract;
 use mindtwo\Appointable\Enums\AppointmentStatus;
@@ -167,7 +168,9 @@ class Appointment extends Model implements AppointableContract
      */
     public function generateUid(): string
     {
-        return md5($this->id.$this->title.$this->start_date.$this->start_time);
+        $uuid = Str::uuid()->toString();
+
+        return md5($uuid.$this->start_date.$this->start_time);
     }
 
     /**
