@@ -167,7 +167,7 @@ class Appointment extends Model implements AppointableContract
      */
     public function generateUid(): string
     {
-        return md5($this->id.$this->start_date.$this->start_time);
+        return md5($this->id.$this->title.$this->start_date.$this->start_time);
     }
 
     /**
