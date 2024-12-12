@@ -26,7 +26,7 @@ use mindtwo\LaravelAutoCreateUuid\AutoCreateUuid;
  * @property ?int $linkable_id
  * @property ?string $linkable_type
  * @property bool $is_entire_day
- * @property AppointmentStatus $status
+ * @property ?AppointmentStatus $status
  * @property Carbon $start_date
  * @property ?Carbon $end_date
  * @property ?Carbon $start_time
@@ -102,7 +102,8 @@ class Appointment extends Model implements AppointableContract
      */
     public function linkable(): MorphTo
     {
-        return $this->morphTo();
+        return $this
+            ->morphTo(__FUNCTION__, 'linkable_type', 'linkable_id');
     }
 
     /**

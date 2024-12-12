@@ -1,5 +1,6 @@
 <?php
 
+use mindtwo\Appointable\Actions\CreateLinkedAppointment;
 use mindtwo\Appointable\Enums\AppointmentStatus;
 use mindtwo\Appointable\Models\Appointment;
 use Workbench\App\Models\CalendarAppointment;
@@ -17,6 +18,7 @@ test('can confirm an appointment by the uuid', function () {
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
         'invitee_type' => User::class,
+        'status' => 'invited',
     ]);
 
     $response = $this->post(route('appointments.confirm', $appointment->uuid))
@@ -38,6 +40,7 @@ test('can confirm an appointment by the uid', function () {
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => $user->id,
         'invitee_type' => User::class,
+        'status' => 'invited',
     ]);
 
     $response = $this->post(route('appointments.confirm', '1-9'))
@@ -60,6 +63,7 @@ test('can`t confirm appointment for other users', function () {
         'end_date' => now()->addDay()->addHour(),
         'invitee_id' => 999,
         'invitee_type' => User::class,
+        'status' => 'invited',
     ]);
 
     $this->post(route('appointments.confirm', '1-9'), [
@@ -72,14 +76,19 @@ test('can`t confirm appointment for other users', function () {
         ->assertStatus(404);
 });
 
-test('can confirm linked appointments', function () {
+test('can confirm linked appointments if a default base status is added', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user);
 
-    $calendarAppointment = CalendarAppointment::factory()
+    $calendarAppointment = CalendarAppointment::withoutEvents(fn () => CalendarAppointment::factory()
         ->for($user)
-        ->create();
+        ->create());
+
+    $calendarAppointment->default_base_status = AppointmentStatus::Invited;
+
+    // Create the linked appointment
+    app(CreateLinkedAppointment::class)($calendarAppointment);
 
     $appointment = $calendarAppointment->appointment;
 

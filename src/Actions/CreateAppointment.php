@@ -31,6 +31,7 @@ class CreateAppointment
             'description' => $data['description'] ?? null,
             'location' => $data['location'] ?? null,
             'is_entire_day' => $isEntireDay,
+            'status' => $data['status'] ?? null,
         ]);
 
         // dispatch event

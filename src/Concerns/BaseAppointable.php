@@ -6,6 +6,8 @@ use mindtwo\Appointable\Actions\CancelAppointment;
 use mindtwo\Appointable\Actions\CreateLinkedAppointment;
 use mindtwo\Appointable\Actions\UpdateLinkedAppointment;
 use mindtwo\Appointable\Contracts\MaybeAutoCreated;
+use mindtwo\Appointable\Enums\AppointmentStatus;
+use mindtwo\Appointable\Scopes\LinkableDataScope;
 
 trait BaseAppointable
 {
@@ -32,9 +34,11 @@ trait BaseAppointable
 
             $model->loadMissing('appointment');
             if ($model->appointment) {
-                $action($model->appointment);
+                $action($model->appointment, true);
             }
         });
+
+        static::addGlobalScope(new LinkableDataScope);
     }
 
     /**
@@ -54,7 +58,6 @@ trait BaseAppointable
             return $this->uid;
         }
 
-        $id = $this->id ?? 0;
         if (property_exists($this, 'uuid')) {
             return $this->uuid;
         }
@@ -112,10 +115,6 @@ trait BaseAppointable
             return $this->location;
         }
 
-        if (method_exists($this, 'getLocation')) {
-            return $this->getLocation();
-        }
-
         return '';
     }
 
@@ -125,5 +124,21 @@ trait BaseAppointable
     public function hasLocation(): bool
     {
         return ! empty($this->getLocation());
+    }
+
+    /**
+     * Get the base appointment status.
+     */
+    public function getBaseAppointmentStatus(): ?AppointmentStatus
+    {
+        if (property_exists($this, 'default_base_status') || property_exists($this, 'attributes') && array_key_exists('default_base_status', $this->attributes)) {
+            return $this->default_base_status;
+        }
+
+        if (method_exists($this, 'getAppointmentStatus')) {
+            return $this->getAppointmentStatus();
+        }
+
+        return null;
     }
 }

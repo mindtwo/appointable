@@ -12,14 +12,14 @@ class AppointmentData
     public function __construct(
         public string $uid,
         public string $uuid,
-        public string $title,
-        public string $description,
+        public ?string $title,
+        public ?string $description,
         public ?string $location,
         public bool $is_entire_day,
         public string $start_date,
-        public string $end_date,
-        public string $start_time,
-        public string $end_time,
+        public ?string $end_date,
+        public ?string $start_time,
+        public ?string $end_time,
         public ?AppointmentStatus $status,
 
         /** @var null|Arrayable<string,mixed>|AppointableResource */

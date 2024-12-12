@@ -201,8 +201,6 @@ test('month overflows', function () {
 
     expect(CalendarAppointment::count())->toBe(9);
 
-    dump(CalendarAppointment::all());
-
     $response = $this->get(route('appointments.index', [
         'date' => now()->format('Y-m-d'),
     ]))

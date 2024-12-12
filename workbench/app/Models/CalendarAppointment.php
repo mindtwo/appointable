@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use mindtwo\Appointable\Concerns\BaseAppointable;
 use mindtwo\Appointable\Contracts\BaseAppointable as AppointableContract;
+use mindtwo\Appointable\Contracts\HandlesAppointmentStatus;
 
 /**
  * @property string $title
@@ -15,7 +16,7 @@ use mindtwo\Appointable\Contracts\BaseAppointable as AppointableContract;
  * @property \DateTime $start
  * @property \DateTime $end
  */
-class CalendarAppointment extends Model implements AppointableContract
+class CalendarAppointment extends Model implements AppointableContract, HandlesAppointmentStatus
 {
     use BaseAppointable;
     use HasFactory;

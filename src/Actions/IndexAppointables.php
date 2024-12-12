@@ -108,7 +108,10 @@ class IndexAppointables
         $user = Auth::user();
 
         $appointments = Appointment::query()
-            ->where('invitee_id', $user->id)
+            ->where([
+                'invitee_id' => $user->id,
+                'invitee_type' => get_class($user),
+            ])
             ->where('start_date', '>=', $start)
             ->where(function ($query) use ($end) {
                 // If we have end_date in DB check endDate against it
@@ -116,7 +119,7 @@ class IndexAppointables
                     // else we have to check if end_date is null and start_date is less than endDate
                     ->orWhere(fn ($q) => $q->whereNull('end_date')->where('start_date', '<=', $end));
             })
-            ->with(['linkable'])
+            ->with('linkable')
             ->orderBy('start_date', 'asc')
             ->orderBy('start_time', 'asc')
             ->get();

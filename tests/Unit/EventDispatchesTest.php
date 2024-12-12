@@ -187,6 +187,7 @@ it('should dispatch AppointmentConfirmed event', function () {
         'title' => 'Test Appointment',
         'start_date' => now(),
         'end_date' => now()->addHour(),
+        'status' => 'invited',
     ], User::factory()->create());
 
     app(ConfirmAppointmentInvitation::class)($appointment);
@@ -205,6 +206,7 @@ it('should dispatch AppointmentDeclined event', function () {
         'title' => 'Test Appointment',
         'start_date' => now(),
         'end_date' => now()->addHour(),
+        'status' => 'invited',
     ], User::factory()->create());
 
     app(DeclineAppointmentInvitation::class)($appointment);

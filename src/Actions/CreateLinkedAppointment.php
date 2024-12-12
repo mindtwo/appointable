@@ -4,6 +4,7 @@ namespace mindtwo\Appointable\Actions;
 
 use Illuminate\Database\Eloquent\Model;
 use mindtwo\Appointable\Contracts\BaseAppointable as AppointableContract;
+use mindtwo\Appointable\Contracts\HandlesAppointmentStatus;
 use mindtwo\Appointable\Contracts\LocatableAppointment;
 use mindtwo\Appointable\Contracts\MaybeIsEntireDay;
 use mindtwo\Appointable\Events\AppointmentCreated;
@@ -11,10 +12,9 @@ use mindtwo\Appointable\Models\Appointment;
 
 class CreateLinkedAppointment
 {
-    public function __invoke(AppointableContract $appointable): ?Appointment
+    public function __invoke(AppointableContract $appointable, bool $silent = false): ?Appointment
     {
         $invitee = $appointable->getInvitee();
-
         if (! $invitee) {
             return null;
         }
@@ -32,7 +32,9 @@ class CreateLinkedAppointment
         $appointment = Appointment::create($data);
 
         // dispatch event
-        AppointmentCreated::dispatch($appointment);
+        if (! $silent) {
+            AppointmentCreated::dispatch($appointment);
+        }
 
         return $appointment;
     }
@@ -70,6 +72,10 @@ class CreateLinkedAppointment
             'start_time' => $startTime,
             'end_time' => $endTime,
         ];
+
+        if ($appointable instanceof HandlesAppointmentStatus) {
+            $data['status'] = $appointable->getBaseAppointmentStatus();
+        }
 
         if ($appointable instanceof MaybeIsEntireDay) {
             $data['is_entire_day'] = $appointable->isEntireDay();

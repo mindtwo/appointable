@@ -10,6 +10,10 @@ class ConfirmAppointmentInvitation
 {
     public function __invoke(Appointment $appointment): bool
     {
+        if (! $appointment->status || $appointment->status === AppointmentStatus::Final) {
+            return false;
+        }
+
         $appointment->status = AppointmentStatus::Confirmed;
         $result = $appointment->save();
 
