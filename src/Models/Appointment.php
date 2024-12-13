@@ -244,11 +244,23 @@ class Appointment extends Model implements AppointableContract
      */
     public function getSequence(): int
     {
-        dispatch(function () {
-            $this->increment('sequence');
-        })->afterResponse();
+        $value = $this->sequence;
 
-        return $this->sequence;
+        // Increment the sequence anonymous job
+        $dispatch = function () {
+            $this->increment('sequence');
+        };
+
+        // If the code is running in the console, we can dispatch the job immediately.
+        if (app()->runningInConsole()) {
+            dispatch($dispatch);
+        } else {
+            // If the code is running in the web, we need to dispatch the job after the response.
+            dispatch($dispatch)->afterResponse();
+        }
+
+        // Return the sequence (incremented by 1)
+        return $value + 1;
     }
 
     /**

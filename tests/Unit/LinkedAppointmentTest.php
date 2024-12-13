@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Queue\CallQueuedClosure;
+use Illuminate\Support\Facades\Queue;
 use mindtwo\Appointable\Models\Appointment;
 use Workbench\App\Models\CalendarAppointment;
 use Workbench\App\Models\User;
@@ -73,4 +75,39 @@ it('deletes the linked appointment if the appointable is deleted', function () {
     // Then the appointment should be deleted as well
     expect($appointable)->toBeNull()
         ->and($appointment)->toBeNull();
+});
+
+it('gets the sequence of the linked appointment via appointment', function () {
+    Queue::fake();
+
+    $user = User::factory()->create();
+
+    // Given we have an appointable
+    $appointable = CalendarAppointment::factory()->for($user)->create();
+    $appointable->fresh();
+
+    // Then the sequence should be 1
+    expect($appointable->getSequence())->toBe(1);
+    $appointable->fresh();
+
+    $closure = null;
+
+    // We are testing so we need to assert the job is pushed
+    Queue::assertPushed(function (CallQueuedClosure $job) use (&$closure) {
+        $closure = $job->closure;
+
+        return $job->closure !== null;
+    });
+    $closure();
+
+    // When the appointable is updated
+    $appointable->update([
+        'start' => now()->addDay(),
+        'end' => now()->addDay()->addHour(),
+    ]);
+
+    $appointable->refresh();
+
+    // Then the sequence should be 2
+    expect($appointable->getSequence())->toBe(2);
 });

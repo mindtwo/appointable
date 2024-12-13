@@ -58,11 +58,43 @@ trait BaseAppointable
             return $this->uid;
         }
 
-        if (property_exists($this, 'uuid')) {
-            return $this->uuid;
+        if (method_exists($this, 'getUid')) {
+            return $this->getUid();
         }
 
         return $this->id;
+    }
+
+    /**
+     * Get the sequence property of the model.
+     */
+    protected function getSequenceIncrementing(): int
+    {
+        if (! property_exists($this, 'sequence') && ! $this->hasAttribute('sequence')) {
+            throw new \Exception('The sequence property is missing.');
+        }
+
+        $value = $this->sequence;
+
+        // Increment the sequence / dispatch the increment action
+        $this->callIncrementSequence();
+
+        // Return the sequence (incremented by 1)
+        return $value + 1;
+    }
+
+    /**
+     * Get the sequence of the linked appointment.
+     */
+    protected function getLinkedSequence(): int
+    {
+        if (! $this->appointment()->exists()) {
+            throw new \Exception('No appointment is linked to our model', 1);
+        }
+
+        $this->loadMissing('appointment');
+
+        return $this->appointment->getSequence();
     }
 
     /**
@@ -71,7 +103,22 @@ trait BaseAppointable
      */
     public function getSequence(): int
     {
-        return $this->sequence ?? 0;
+        // if we have a sequence property, we can use it to increment the sequence
+        if (property_exists($this, 'sequence') || $this->hasAttribute('sequence')) {
+            return $this->getSequenceIncrementing();
+        }
+
+        // if we have an appointment, we can use the sequence of the appointment
+        if ($this->appointment()->exists()) {
+            return $this->getLinkedSequence();
+        }
+
+        // if we have a method to get the sequence, we can use it
+        if (method_exists($this, 'getAppointmentSequence')) {
+            return $this->getAppointmentSequence();
+        }
+
+        return 0;
     }
 
     /**
@@ -140,5 +187,50 @@ trait BaseAppointable
         }
 
         return null;
+    }
+
+    /**
+     * Increment the sequence of the model.
+     */
+    protected function incrementSequence(): void
+    {
+        try {
+            $this->increment('sequence');
+        } catch (\Throwable $th) {
+            throw new \Exception('The default implementation for incrementing the sequence is not working. Please override the incrementSequence method in your model.', 1, $th);
+        }
+    }
+
+    /**
+     * Call increment sequence.
+     */
+    private function callIncrementSequence(): void
+    {
+        $autoIncrement = true;
+
+        // If the model has an auto_increment_sequence property, we can use it to determine if the sequence should be incremented.
+        if (property_exists($this, 'auto_increment_sequence') || $this->hasAttribute('auto_increment_sequence')) {
+            $autoIncrement = $this->auto_increment_sequence;
+        }
+
+        if (! $autoIncrement) {
+            return;
+        }
+
+        // Increment the sequence anonymous job
+        $dispatch = function () {
+            // Increment the sequence
+            $this->incrementSequence();
+        };
+
+        // If the code is running in the console, we can dispatch the job immediately.
+        if (app()->runningInConsole()) {
+            dispatch($dispatch);
+
+            return;
+        }
+
+        // If the code is running in the web, we need to dispatch the job after the response.
+        dispatch($dispatch)->afterResponse();
     }
 }
