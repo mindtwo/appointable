@@ -33,7 +33,10 @@ class Ics implements Stringable
         $this->icsFile
             ->sequence($appointment->getSequence())
             ->start($appointment->getAppointmentStart())
-            ->end($appointment->getAppointmentEnd());
+            ->when(
+                $appointment->getAppointmentEnd(),
+                fn ($ics) => $ics->end($appointment->getAppointmentEnd())
+            );
 
         // Set appointment title and description if available
         if ($title = $appointment->getAppointmentTitle()) {

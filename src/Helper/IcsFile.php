@@ -4,10 +4,13 @@ namespace mindtwo\Appointable\Helper;
 
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Traits\Conditionable;
 use Stringable;
 
 class IcsFile implements Stringable
 {
+    use Conditionable;
+
     /**
      * Start date and time for the event.
      */
