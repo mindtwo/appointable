@@ -41,15 +41,34 @@ class IcsFile implements Stringable
      */
     private ?string $description;
 
+    /**
+     * URL of the event.
+     */
     private ?string $url;
 
-    private string $method = 'PUBLISH';
+    /**
+     * Method of the event.
+     */
+    private bool $isCancelled = false;
 
+    // TODO?
+    // CREATED:20180331T150000
+    // LAST-MODIFIED:20180331T150000
+
+    // TODO? add organizer info?
+    // ORGANIZER;CN=organizer@gmail.com:mailto:organizer@gmail.com
+
+    // TODO? add attendee info?
+
+    /**
+     * Is the event an entire day event?
+     */
     private bool $isEntireDay = false;
 
     public function __construct(
         private string $uid,
         private string $organizer,
+        private ?string $attendee = null,
         private string $eol = PHP_EOL,
         private string $tsFormat = 'Ymd\THis\Z',
     ) {}
@@ -82,13 +101,30 @@ class IcsFile implements Stringable
         return $this;
     }
 
+    /**
+     * Set method for the event.
+     */
     public function cancel(): self
     {
-        $this->method = 'CANCEL';
+        $this->isCancelled = true;
         // increment sequence to cancel the event
         $this->sequence = $this->sequence + 1;
 
         return $this;
+    }
+
+    protected function getMethod(): string
+    {
+        if ($this->isCancelled) {
+            return 'CANCEL';
+        }
+
+        // If sequence is set, it's a request
+        if ($this->sequence > 0) {
+            return 'REQUEST';
+        }
+
+        return 'PUBLISH';
     }
 
     /**
@@ -149,6 +185,9 @@ class IcsFile implements Stringable
         return $this;
     }
 
+    /**
+     * Get the content of the ics file.
+     */
     public function content(): string
     {
         return Str::of($this->contentStart())->trim()->append($this->eol)
@@ -166,9 +205,14 @@ class IcsFile implements Stringable
             ->append('DTSTAMP:'.Carbon::now()->format($this->tsFormat).$this->eol)
             ->append('ORGANIZER:mailto:'.$this->organizer.$this->eol)
             ->append('UID:'.$this->uid.$this->eol)
-            ->append('SEQUENCE:'.$this->sequence.$this->eol);
+            ->append('SEQUENCE:'.$this->sequence.$this->eol)
+            ->when(
+                $this->attendee,
+                fn ($string) => $string->append($this->getAttendee().$this->eol)
+            );
 
-        if ($this->method === 'CANCEL') {
+        // If the event is cancelled, add a comment start and return
+        if ($this->isCancelled) {
             return $content
                 ->append('DTSTART:'.$this->start.$this->eol)
                 ->append('COMMENT:Training canceled'.$this->eol)
@@ -198,12 +242,23 @@ class IcsFile implements Stringable
             ->toString();
     }
 
+    /**
+     * Get the PRODID line for the ics file.
+     */
     private function getProdIdLine(): string
     {
         $appOrigin = str_replace(['http://', 'https://'], '', config('app.url'));
         $name = trim(strtolower(config('app.name')), '/');
 
-        return "PRODID:-//$appOrigin//$name//DE";
+        return "PRODID:-//$appOrigin/$name//DE";
+    }
+
+    /**
+     * Get the ATTENDEE line for the ics file.
+     */
+    protected function getAttendee(): string
+    {
+        return "ATTENDEE:CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;X-NUM-GUESTS=0:mailto:{$this->attendee}";
     }
 
     /**
@@ -216,7 +271,7 @@ class IcsFile implements Stringable
             ->append('VERSION:2.0'.$this->eol)
             ->append($this->getProdIdLine().$this->eol)
             ->append('CALSCALE:GREGORIAN'.$this->eol)
-            ->append('METHOD:'.$this->method.$this->eol)
+            ->append('METHOD:'.$this->getMethod().$this->eol)
             ->toString();
     }
 
