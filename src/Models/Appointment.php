@@ -21,7 +21,7 @@ use mindtwo\LaravelAutoCreateUuid\AutoCreateUuid;
  * @property int $id
  * @property string $uuid
  * @property string $uid
- * @property int $sequence
+ * @property ?int $sequence
  * @property ?int $invitee_id
  * @property ?int $linkable_id
  * @property ?string $linkable_type
