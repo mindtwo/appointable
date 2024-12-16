@@ -15,7 +15,7 @@ class Ics implements Stringable
 
     private IcsFile $icsFile;
 
-    private function __construct(AppointableContract $appointment, ?string $organizer = null)
+    private function __construct(AppointableContract $appointment, ?string $organizer = null, ?string $attendee = null)
     {
         $this->appointment = $appointment;
 
@@ -28,6 +28,7 @@ class Ics implements Stringable
         $this->icsFile = new IcsFile(
             $appointment->getAppointmentUid(),
             $organizer,
+            $attendee,
         );
 
         $this->icsFile
@@ -101,8 +102,8 @@ class Ics implements Stringable
         }, $this->filename());
     }
 
-    public static function make(AppointableContract $appointment, ?string $organizer = null): self
+    public static function make(AppointableContract $appointment, ?string $organizer = null, ?string $attendee = null): self
     {
-        return new self($appointment, $organizer);
+        return new self($appointment, $organizer, $attendee);
     }
 }
