@@ -93,6 +93,11 @@ class Appointment extends Model implements AppointableContract
                 $appointment->uid = $appointment->generateUid();
             }
         });
+
+        static::updating(function (Appointment $appointment) {
+            // Increment the sequence
+            $appointment->sequence = $appointment->sequence + 1;
+        });
     }
 
     /**
@@ -246,21 +251,8 @@ class Appointment extends Model implements AppointableContract
     {
         $value = $this->sequence;
 
-        // Increment the sequence anonymous job
-        $dispatch = function () {
-            $this->increment('sequence');
-        };
-
-        // If the code is running in the console, we can dispatch the job immediately.
-        if (app()->runningInConsole()) {
-            dispatch($dispatch);
-        } else {
-            // If the code is running in the web, we need to dispatch the job after the response.
-            dispatch($dispatch)->afterResponse();
-        }
-
-        // Return the sequence (incremented by 1)
-        return $value + 1;
+        // Return the sequence
+        return $value ?? 0;
     }
 
     /**

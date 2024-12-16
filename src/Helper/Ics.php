@@ -19,7 +19,7 @@ class Ics implements Stringable
     {
         $this->appointment = $appointment;
 
-        $organizer = $organizer ?? config('appointable.organizer');
+        $organizer = $organizer ?? config('appointable.default_organizer');
 
         if (! $organizer) {
             throw new \InvalidArgumentException('No organizer set. Please set an organizer in the config or pass it as second argument.');

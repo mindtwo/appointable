@@ -68,19 +68,14 @@ trait BaseAppointable
     /**
      * Get the sequence property of the model.
      */
-    protected function getSequenceIncrementing(): int
+    protected function getSequenceProperty(): int
     {
         if (! property_exists($this, 'sequence') && ! $this->hasAttribute('sequence')) {
             throw new \Exception('The sequence property is missing.');
         }
 
-        $value = $this->sequence;
-
-        // Increment the sequence / dispatch the increment action
-        $this->callIncrementSequence();
-
-        // Return the sequence (incremented by 1)
-        return $value + 1;
+        // Return the sequence
+        return $this->sequence;
     }
 
     /**
@@ -105,7 +100,7 @@ trait BaseAppointable
     {
         // if we have a sequence property, we can use it to increment the sequence
         if (property_exists($this, 'sequence') || $this->hasAttribute('sequence')) {
-            return $this->getSequenceIncrementing();
+            return $this->getSequenceProperty();
         }
 
         // if we have an appointment, we can use the sequence of the appointment
@@ -187,50 +182,5 @@ trait BaseAppointable
         }
 
         return null;
-    }
-
-    /**
-     * Increment the sequence of the model.
-     */
-    protected function incrementSequence(): void
-    {
-        try {
-            $this->increment('sequence');
-        } catch (\Throwable $th) {
-            throw new \Exception('The default implementation for incrementing the sequence is not working. Please override the incrementSequence method in your model.', 1, $th);
-        }
-    }
-
-    /**
-     * Call increment sequence.
-     */
-    private function callIncrementSequence(): void
-    {
-        $autoIncrement = true;
-
-        // If the model has an auto_increment_sequence property, we can use it to determine if the sequence should be incremented.
-        if (property_exists($this, 'auto_increment_sequence') || $this->hasAttribute('auto_increment_sequence')) {
-            $autoIncrement = $this->auto_increment_sequence;
-        }
-
-        if (! $autoIncrement) {
-            return;
-        }
-
-        // Increment the sequence anonymous job
-        $dispatch = function () {
-            // Increment the sequence
-            $this->incrementSequence();
-        };
-
-        // If the code is running in the console, we can dispatch the job immediately.
-        if (app()->runningInConsole()) {
-            dispatch($dispatch);
-
-            return;
-        }
-
-        // If the code is running in the web, we need to dispatch the job after the response.
-        dispatch($dispatch)->afterResponse();
     }
 }

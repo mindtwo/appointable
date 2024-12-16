@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Support\Facades\Queue;
 use mindtwo\Appointable\Models\Appointment;
 use Workbench\App\Models\CalendarAppointment;
@@ -86,19 +85,9 @@ it('gets the sequence of the linked appointment via appointment', function () {
     $appointable = CalendarAppointment::factory()->for($user)->create();
     $appointable->fresh();
 
-    // Then the sequence should be 1
-    expect($appointable->getSequence())->toBe(1);
+    // Then the sequence should be 0
+    expect($appointable->getSequence())->toBe(0);
     $appointable->fresh();
-
-    $closure = null;
-
-    // We are testing so we need to assert the job is pushed
-    Queue::assertPushed(function (CallQueuedClosure $job) use (&$closure) {
-        $closure = $job->closure;
-
-        return $job->closure !== null;
-    });
-    $closure();
 
     // When the appointable is updated
     $appointable->update([
@@ -108,6 +97,6 @@ it('gets the sequence of the linked appointment via appointment', function () {
 
     $appointable->refresh();
 
-    // Then the sequence should be 2
-    expect($appointable->getSequence())->toBe(2);
+    // Then the sequence should be 1
+    expect($appointable->getSequence())->toBe(1);
 });

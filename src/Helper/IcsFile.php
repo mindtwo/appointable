@@ -51,6 +51,7 @@ class IcsFile implements Stringable
         private string $uid,
         private string $organizer,
         private string $eol = PHP_EOL,
+        private string $tsFormat = 'Ymd\THis\Z',
     ) {}
 
     /**
@@ -62,7 +63,7 @@ class IcsFile implements Stringable
     {
         // iCal date format: yyyymmddThhiissZ
         // PHP equiv format: Ymd\This\Z (note H since we want 24h format)
-        $this->start = Carbon::parse($start)->format('Ymd\THis\Z');
+        $this->start = Carbon::parse($start)->format($this->tsFormat);
 
         return $this;
     }
@@ -76,7 +77,7 @@ class IcsFile implements Stringable
     {
         // iCal date format: yyyymmddThhiissZ
         // PHP equiv format: Ymd\THis\Z (note H since we want 24h format)
-        $this->end = Carbon::parse($end)->format('Ymd\THis\Z');
+        $this->end = Carbon::parse($end)->format($this->tsFormat);
 
         return $this;
     }
@@ -84,6 +85,8 @@ class IcsFile implements Stringable
     public function cancel(): self
     {
         $this->method = 'CANCEL';
+        // increment sequence to cancel the event
+        $this->sequence = $this->sequence + 1;
 
         return $this;
     }
@@ -154,25 +157,26 @@ class IcsFile implements Stringable
             ->toString();
     }
 
+    /**
+     * Get teh VEVENT section of the ics file.
+     */
     private function contentEvent(): string
     {
-        if ($this->method === 'CANCEL') {
-            $this->sequence += 1;
-        }
-
         $content = Str::of('BEGIN:VEVENT'.$this->eol)
-            ->append('DTSTAMP:'.Carbon::now()->format('Ymd\THis\Z').$this->eol)
+            ->append('DTSTAMP:'.Carbon::now()->format($this->tsFormat).$this->eol)
             ->append('ORGANIZER:mailto:'.$this->organizer.$this->eol)
             ->append('UID:'.$this->uid.$this->eol)
             ->append('SEQUENCE:'.$this->sequence.$this->eol);
 
         if ($this->method === 'CANCEL') {
             return $content
+                ->append('DTSTART:'.$this->start.$this->eol)
                 ->append('COMMENT:Training canceled'.$this->eol)
                 ->append('END:VEVENT'.$this->eol)
                 ->toString();
         }
 
+        // All day events have a different format
         if ($this->isEntireDay) {
             $date = explode('T', $this->start)[0];
 
@@ -194,18 +198,23 @@ class IcsFile implements Stringable
             ->toString();
     }
 
+    private function getProdIdLine(): string
+    {
+        $appOrigin = str_replace(['http://', 'https://'], '', config('app.url'));
+        $name = trim(strtolower(config('app.name')), '/');
+
+        return "PRODID:-//$appOrigin//$name//DE";
+    }
+
     /**
      * Returns the start of the ics file.
      */
     private function contentStart(): string
     {
-        $appOrigin = str_replace(['http://', 'https://'], '', config('app.url'));
 
         return Str::of('BEGIN:VCALENDAR'.$this->eol)
             ->append('VERSION:2.0'.$this->eol)
-            ->append('PRODID:-//')
-            ->append(strtolower(config('app.name')).'/'.$appOrigin)
-            ->append('//DE', $this->eol)
+            ->append($this->getProdIdLine().$this->eol)
             ->append('CALSCALE:GREGORIAN'.$this->eol)
             ->append('METHOD:'.$this->method.$this->eol)
             ->toString();
