@@ -2,6 +2,7 @@
 
 namespace mindtwo\Appointable\Actions;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -21,9 +22,11 @@ class IndexAppointables
      *
      * @return array<mixed>
      */
-    public function __invoke(Carbon $date, CalendarInterval $calendarInterval): array
+    public function __invoke(Carbon $date, CalendarInterval $calendarInterval, ?Model $invitee = null): array
     {
         abort_if(! Auth::check(), 401);
+
+        $invitee = $invitee ?? Auth::user();
 
         $this->current_date = $date;
         $this->calendarInterval = $calendarInterval;
@@ -40,7 +43,7 @@ class IndexAppointables
         $days = $this->getCalendarGrid($meta->start, $meta->end);
 
         // Get appointments
-        $appointments = $this->getAppointments($meta->start, $meta->end);
+        $appointments = $this->getAppointments($meta->start, $meta->end, $invitee);
 
         $groupedAppointments = $appointments->reduce(function ($carry, Appointment $appointment) use ($appointments) {
             $dateKey = $appointment->start_date->format('Y-m-d');
@@ -103,14 +106,14 @@ class IndexAppointables
      *
      * @return Collection<int, Appointment>
      */
-    protected function getAppointments(Carbon $start, Carbon $end): Collection
+    protected function getAppointments(Carbon $start, Carbon $end, ?Model $invitee = null): Collection
     {
-        $user = Auth::user();
+        $invitee = $invitee ?? Auth::user();
 
         $appointments = Appointment::query()
             ->where([
-                'invitee_id' => $user->id,
-                'invitee_type' => get_class($user),
+                'invitee_id' => $invitee->getKey(),
+                'invitee_type' => $invitee->getMorphClass(),
             ])
             ->where('start_date', '>=', $start)
             ->where(function ($query) use ($end) {

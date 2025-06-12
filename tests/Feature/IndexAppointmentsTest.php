@@ -227,6 +227,7 @@ test('month overflows', function () {
     });
 
     $appointments = collect($response->json('data.appointments'));
+
     expect($appointments->flatten(1))->toHaveCount(5);
 
     // Check if the appointments are from the curent month and if they are grouped correctly

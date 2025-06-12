@@ -24,8 +24,17 @@ class IndexAppointablesController
 
         $interval = $request->enum('interval', CalendarInterval::class) ?? CalendarInterval::Monthly;
 
+        $invitee = null;
+        if ($request->user()) {
+            $invitee = $request->user();
+
+            if (method_exists($invitee, 'getInvitee')) {
+                $invitee = $invitee->getInvitee();
+            }
+        }
+
         return response()->json(
-            $indexAppointables($date, $interval)
+            $indexAppointables($date, $interval, $invitee)
         );
     }
 }
