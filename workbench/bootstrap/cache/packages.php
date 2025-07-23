@@ -48,6 +48,13 @@
       0 => 'Orchestra\\Canvas\\Core\\LaravelServiceProvider',
     ),
   ),
+  'pestphp/pest-plugin-laravel' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Pest\\Laravel\\PestServiceProvider',
+    ),
+  ),
   'spatie/laravel-data' => 
   array (
     'providers' => 
