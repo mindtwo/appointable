@@ -9,8 +9,6 @@ trait BaseInvitee
 {
     /**
      * Get the invitee model.
-     *
-     * @return Model|null
      */
     public function getInvitee(): ?Model
     {

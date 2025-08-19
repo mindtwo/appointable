@@ -2,10 +2,8 @@
 
 namespace mindtwo\Appointable\Actions;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use mindtwo\Appointable\Contracts\Invitee;
 use mindtwo\Appointable\Data\AppointmentData;
 use mindtwo\Appointable\Data\CalendarMeta;

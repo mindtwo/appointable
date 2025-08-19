@@ -2,7 +2,6 @@
 
 namespace mindtwo\Appointable\Actions;
 
-use Illuminate\Database\Eloquent\Model;
 use mindtwo\Appointable\Contracts\Invitee;
 use mindtwo\Appointable\Events\AppointmentCreated;
 use mindtwo\Appointable\Models\Appointment;

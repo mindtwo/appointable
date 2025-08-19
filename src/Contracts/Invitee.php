@@ -4,11 +4,8 @@ namespace mindtwo\Appointable\Contracts;
 
 interface Invitee
 {
-
     /**
      * Get the invitee model.
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function getInvitee(): ?\Illuminate\Database\Eloquent\Model;
 
@@ -25,5 +22,4 @@ interface Invitee
      * @return class-string<\Illuminate\Database\Eloquent\Model> - The class name of the invitee model.
      */
     public function getInviteeType(): string;
-
 }

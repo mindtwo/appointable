@@ -11,7 +11,7 @@ use mindtwo\Appointable\Contracts\Invitee;
 
 class User extends Authenticatable implements Invitee
 {
-    use HasFactory, Notifiable, BaseInvitee;
+    use BaseInvitee, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
