@@ -12,8 +12,6 @@ class LinkableDataScope implements Scope
      * Apply the scope to a given Eloquent query builder.
      *
      * @return void
-     *
-     * @phpstan-ignore-next-line - Ignore the missing generic type for Builder
      */
     public function apply(Builder $builder, Model $model)
     {

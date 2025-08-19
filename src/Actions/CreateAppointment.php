@@ -3,6 +3,7 @@
 namespace mindtwo\Appointable\Actions;
 
 use Illuminate\Database\Eloquent\Model;
+use mindtwo\Appointable\Contracts\Invitee;
 use mindtwo\Appointable\Events\AppointmentCreated;
 use mindtwo\Appointable\Models\Appointment;
 
@@ -13,7 +14,7 @@ class CreateAppointment
      *
      * @param  array<string, mixed>  $data
      */
-    public function __invoke(array $data, Model $invitee, bool $isEntireDay = false): Appointment
+    public function __invoke(array $data, Invitee $invitee, bool $isEntireDay = false): Appointment
     {
         if ($isEntireDay) {
             $data['start_time'] = null;
@@ -22,8 +23,8 @@ class CreateAppointment
 
         $appointment = Appointment::create([
             'title' => $data['title'],
-            'invitee_id' => $invitee->getKey(),
-            'invitee_type' => $invitee->getMorphClass(),
+            'invitee_id' => $invitee->getInviteeId(),
+            'invitee_type' => $invitee->getInviteeType(),
             'start_date' => $data['start_date'],
             'end_date' => $data['end_date'],
             'start_time' => $data['start_time'] ?? null,

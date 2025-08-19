@@ -5,6 +5,7 @@ namespace mindtwo\Appointable\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use mindtwo\Appointable\Actions\CancelAppointment;
+use mindtwo\Appointable\Contracts\Invitee;
 use mindtwo\Appointable\Models\Appointment;
 
 class CancelAppointmentController
@@ -14,11 +15,16 @@ class CancelAppointmentController
      */
     public function __invoke(Request $request, string $uuidOrUid): JsonResponse
     {
-        abort_if(! $request->user(), 401);
+        $user = $request->user();
+
+        abort_if(! $user || ! $user instanceof Invitee, 401);
 
         $appointment = Appointment::query()
             ->where(fn ($q) => $q->where('uuid', $uuidOrUid)->orWhere('uid', $uuidOrUid))
-            ->where('invitee_id', $request->user()->id)
+            ->where([
+                'invitee_id' => $user->getInviteeId(),
+                'invitee_type' => $user->getInviteeType(),
+            ])
             ->with('linkable')
             ->first();
 

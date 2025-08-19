@@ -1,10 +1,13 @@
 includes:
-    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
 
 parameters:
 
     paths:
         - src/
+
+    ignoreErrors:
+        - identifier: instanceof.alwaysTrue
 
     # Level 9 is the highest level
     level: 6

@@ -29,22 +29,22 @@ class IcsFile implements Stringable
     /**
      * Summary of the event.
      */
-    private ?string $summary;
+    private ?string $summary = null;
 
     /**
      * Location of the event.
      */
-    private ?string $location;
+    private ?string $location = null;
 
     /**
      * Description of the event.
      */
-    private ?string $description;
+    private ?string $description = null;
 
     /**
      * URL of the event.
      */
-    private ?string $url;
+    private ?string $url = null;
 
     /**
      * Method of the event.

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use mindtwo\Appointable\Contracts\Invitee;
 use mindtwo\Appointable\Data\AppointmentData;
 use mindtwo\Appointable\Data\CalendarMeta;
 use mindtwo\Appointable\Enums\CalendarInterval;
@@ -22,12 +23,9 @@ class IndexAppointables
      *
      * @return array<mixed>
      */
-    public function __invoke(Carbon $date, CalendarInterval $calendarInterval, ?Model $invitee = null): array
+    public function __invoke(Carbon $date, CalendarInterval $calendarInterval, Invitee $invitee): array
     {
-        abort_if(! Auth::check(), 401);
-
-        $invitee = $invitee ?? Auth::user();
-
+        // Set the current date and calendar interval
         $this->current_date = $date;
         $this->calendarInterval = $calendarInterval;
 
@@ -106,14 +104,12 @@ class IndexAppointables
      *
      * @return Collection<int, Appointment>
      */
-    protected function getAppointments(Carbon $start, Carbon $end, ?Model $invitee = null): Collection
+    protected function getAppointments(Carbon $start, Carbon $end, Invitee $invitee): Collection
     {
-        $invitee = $invitee ?? Auth::user();
-
         $appointments = Appointment::query()
             ->where([
-                'invitee_id' => $invitee->getKey(),
-                'invitee_type' => $invitee->getMorphClass(),
+                'invitee_id' => $invitee->getInviteeId(),
+                'invitee_type' => $invitee->getInviteeType(),
             ])
             ->where('start_date', '>=', $start)
             ->where(function ($query) use ($end) {
@@ -133,7 +129,7 @@ class IndexAppointables
     /**
      * Get calendar grid.
      *
-     * @return array<array{date_iso: string, day: string, day_of_week: int, is_current_day: bool}>>
+     * @return array<array{date_iso: string, day: string, day_of_week: int, is_current_day: bool}>
      */
     protected function getCalendarGrid(Carbon $start, Carbon $end): array
     {
