@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use mindtwo\Appointable\Actions\IndexAppointables;
+use mindtwo\Appointable\Contracts\Invitee;
 use mindtwo\Appointable\Enums\CalendarInterval;
 use mindtwo\Appointable\Helper\TimesAndDates;
 
@@ -16,6 +17,10 @@ class IndexAppointablesController
      */
     public function __invoke(Request $request, IndexAppointables $indexAppointables): JsonResponse
     {
+        $user = $request->user();
+
+        abort_if(! $user || ! $user instanceof Invitee, 401);
+
         if ($request->get('date', false)) {
             $date = TimesAndDates::convertDateToUserTimezone($request->get('date'));
         } else {
@@ -24,17 +29,8 @@ class IndexAppointablesController
 
         $interval = $request->enum('interval', CalendarInterval::class) ?? CalendarInterval::Monthly;
 
-        $invitee = null;
-        if ($request->user()) {
-            $invitee = $request->user();
-
-            if (method_exists($invitee, 'getInvitee')) {
-                $invitee = $invitee->getInvitee();
-            }
-        }
-
         return response()->json(
-            $indexAppointables($date, $interval, $invitee)
+            $indexAppointables($date, $interval, $user)
         );
     }
 }

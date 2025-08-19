@@ -52,7 +52,7 @@ class Appointment extends Model implements AppointableContract
     /**
      * The attributes that aren't mass assignable.
      *
-     * @var array<string>|bool
+     * @var array<string>
      */
     protected $guarded = ['id', 'uuid'];
 
@@ -73,7 +73,7 @@ class Appointment extends Model implements AppointableContract
     /**
      * The attributes that should be appended.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $appends = [
         'start_time_local',
@@ -103,7 +103,7 @@ class Appointment extends Model implements AppointableContract
     /**
      * Get the linkable model
      *
-     * @phpstan-ignore-next-line
+     * @return MorphTo<\Illuminate\Database\Eloquent\Model, $this>
      */
     public function linkable(): MorphTo
     {
@@ -114,7 +114,7 @@ class Appointment extends Model implements AppointableContract
     /**
      * Get the invitee model
      *
-     * @phpstan-ignore-next-line
+     * @return MorphTo<\Illuminate\Database\Eloquent\Model, $this>
      */
     public function invitee(): MorphTo
     {
@@ -124,7 +124,7 @@ class Appointment extends Model implements AppointableContract
     /**
      * Get the start time in the user's timezone
      *
-     * @return Attribute<string, null>
+     * @return Attribute<string, never>
      */
     protected function startTimeLocal(): Attribute
     {
@@ -136,7 +136,7 @@ class Appointment extends Model implements AppointableContract
     /**
      * Get the end time in the user's timezone
      *
-     * @return Attribute<string, null>
+     * @return Attribute<string, never>
      */
     protected function endTimeLocal(): Attribute
     {
@@ -148,7 +148,7 @@ class Appointment extends Model implements AppointableContract
     /**
      * Get the start date and time as Carbon instance
      *
-     * @return Attribute<Carbon, null>
+     * @return Attribute<Carbon, never>
      */
     protected function start(): Attribute
     {
@@ -160,7 +160,7 @@ class Appointment extends Model implements AppointableContract
     /**
      * Get the end date and time as Carbon instance
      *
-     * @return Attribute<Carbon, null>
+     * @return Attribute<Carbon, never>
      */
     protected function end(): Attribute
     {

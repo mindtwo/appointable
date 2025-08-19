@@ -4,6 +4,7 @@ namespace mindtwo\Appointable\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use mindtwo\Appointable\Actions\CreateAppointment;
+use mindtwo\Appointable\Contracts\Invitee;
 use mindtwo\Appointable\Http\Requests\CreateAppointmentRequest;
 
 class CreateAppointmentController
@@ -27,8 +28,8 @@ class CreateAppointmentController
             $invitee = $defaultInviteeClass::find($invitee);
         }
 
-        if (! $invitee) {
-            return response()->json(['error' => 'Invitee not specified'], 422);
+        if (! $invitee || ! $invitee instanceof Invitee) {
+            return response()->json(['error' => 'Invitee incorrect/not specified'], 422);
         }
 
         $appointment = app(CreateAppointment::class)($data, $invitee, $request->boolean('is_entire_day', false));

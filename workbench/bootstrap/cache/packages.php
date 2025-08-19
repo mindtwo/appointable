@@ -69,14 +69,4 @@
       0 => 'Spatie\\StructureDiscoverer\\StructureDiscovererServiceProvider',
     ),
   ),
-  'mindtwo/appointable' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'mindtwo\\Appointable\\Providers\\AppointableServiceProvider',
-    ),
-    'aliases' => 
-    array (
-    ),
-  ),
 );

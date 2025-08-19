@@ -9,6 +9,7 @@ use mindtwo\Appointable\Contracts\MaybeAutoCreated;
 use mindtwo\Appointable\Enums\AppointmentStatus;
 use mindtwo\Appointable\Scopes\LinkableDataScope;
 
+// @phpstan-ignore-next-line - We know that the trait exists
 trait BaseAppointable
 {
     public static function bootBaseAppointable(): void
